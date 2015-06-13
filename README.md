@@ -8,3 +8,6 @@ What if nature gets addicted to this selfie culture and expresses itself.  If it
 The Selfie Plant is an attempt to provoke some thoughts in the above genre of expression. The Selfie Plant expresses itself in the form of a nice-looking selfies, which it clicks according to its mood, weather or occasion. It mimics human behaviour, by giving it’s best pose and adjusting the camera angle to take the perfect selfie. Undoubtedly, the plant posts these photos on social network via it’s Facebook profile.
 
 The plant is powered by Arduino Yun, which controls the servo motors and adjust the positions of the plant and the camera stick. A python script communicates with Facebook’s graph API to post the captured photos on plant’s Facebook profile.
+
+Link to the video <a href ="https://vimeo.com/129462054" target=new> https://vimeo.com/129462054 </a> 
+
