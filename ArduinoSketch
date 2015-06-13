@@ -1,0 +1,109 @@
+#include <Bridge.h>
+#include <Process.h>
+#include <Adafruit_NeoPixel.h>
+#include <Adafruit_TiCoServo.h>
+#include <Servo.h>
+
+Process picture;
+
+String filename;
+
+int ButtonPin = 7;
+
+// Set the path for the external SD card, mounted on the YUN
+String path = "/mnt/sda1/";
+
+int number = 12;
+
+// Description for the Adafruit_NeoPixel arguments 
+// Parameter 1 = number of pixels in strip
+// Parameter 2 = pin number (most are valid)
+// Parameter 3 = pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(number, 11, NEO_GRB + NEO_KHZ800);
+
+Adafruit_TiCoServo myservo180, myservo360;
+
+void setup() {
+  Bridge.begin();
+  Serial.begin(9600);
+  strip.begin();
+  
+  pinMode(ButtonPin, INPUT);
+  
+  //attach the 360 motor to pin 10 
+  myservo360.attach(10);
+  //attach the 360 motor to pin 9 
+  myservo180.attach(9); 
+  
+}
+
+void loop() {
+ 
+  //Set the behaviour of the plant based on one of more variables like: 
+  // - weather data from weather APIs
+  // - sensory data from sensors like light detectors, pressure
+  // - a time interval
+  // - an external button
+
+  //The logic for an external button
+  if (digitalRead(ButtonPin) == true) {
+    
+    // The 360 & 180 motors moves at an angle, on button press  
+    myservo360.write(100);
+    delay(600);
+    myservo360.write(80);
+    delay(400);
+    myservo360.write(100);
+    delay(400);
+    myservo360.write(90);
+    
+    myservo180.write(60);
+    delay(200);
+    myservo180.write(30);
+    delay(200);
+    myservo180.write(0);
+    delay(200);
+
+
+    // Initiate the LED grid for the flash 
+    for (int i = 0; i < number ; i++){  
+        strip.setPixelColor(i, 255, 255, 255);
+        strip.show();
+    }
+  
+    delay(200);
+  
+    for (int i = 0; i < number ; i++){
+        strip.setPixelColor(i, 0, 0, 0);
+        strip.show();
+     }
+  
+    // Generate filename with timestamp
+    filename = "";
+    picture.runShellCommand("date +%s");
+    while(picture.running());
+
+    while (picture.available()>0) {
+      char c = picture.read();
+      filename += c;
+    } 
+    filename.trim();
+    filename += ".png";
+ 
+    // Take picture
+    picture.runShellCommand("fswebcam " + path + filename + " -r 1280x720");
+    while(picture.running());
+    
+    // Upload to Facebook
+    picture.runShellCommand("python " + path + "facebook.py " + path + filename);
+    while(picture.running());
+ 
+  
+  }
+ 
+}
+
