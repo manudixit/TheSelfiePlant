@@ -17,6 +17,7 @@ Hardware Required:
 - Bread Board
 - 5 Volt Battery
 
+
 The Circuit Diagram:
 ![Circuit Diagram](http://ciid.dk/root_ciidwww/wp-content/uploads/2015/06/TheSelfie-Plant_Fritzing-897x1024.png)
 
